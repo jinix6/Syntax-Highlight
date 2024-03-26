@@ -1,0 +1,88 @@
+{
+    name: ["Typescript", ".ts"]
+    hide: false
+    ignoreCase: false
+    colors: [
+    "default", #282820, #FFFFFF
+    "string",  #6080E0, #6080E0
+    "strEscape", #1E90FF, #4682B4
+    "comment", #989080, #989080
+    "meta",, #FFA500, #FFD700
+    "number",  #4169E1, #6495ED
+    "keyword", #A89010, #A89010
+    "keyword2",  #800080, #9932CC
+    "constant",  #9400D3, #8A2BE2
+    "type",, #4682B4, #87CEEB
+    "label",   #4B0082, #8A2BE2
+    "variable",  #0000FF, #1E90FF
+    "operator",  #2F4F4F, #778899
+    "propKey", #8B0000, #B22222
+    "propVal", #228B22, #6B8E23
+    "tagName", #800000, #A52A2A
+    "attrName",  #000080, #4169E1
+    "namespace", #9400D3, #8A2BE2
+    "error",   #FF0000, #DC143C
+]
+
+    comment: {startsWith: "//"}
+    comment: {startsWith: "/*", endsWith: "*/"}
+    defines: [
+        "single-quoted-string": {
+            color: "string"
+            start: {match: /'/}
+            end: {match: /(?m)'|$/}
+            contains: [
+                {match: /\\\n/, 0: "strEscape"}
+                {builtin: #JAVA_ESCAPED_CHAR#}
+            ]
+        }
+        "double-quoted-string": {
+            color: "string"
+            start: {match: /"/}
+            end: {match: /(?m)"|$/}
+            contains: [
+                {match: /\\\n/, 0: "strEscape"}
+                {builtin: #JAVA_ESCAPED_CHAR#}
+            ]
+        }
+        "backtick-string": {
+            color: "string"
+            start: {match: /`/}
+            end: {match: /`/}
+            contains: [
+                {match: /\\`/, 0: "strEscape"}
+                {builtin: #JAVA_ESCAPED_CHAR#}
+                {include: "dollarExp"}
+            ]
+        }
+        "dollarExp": {
+            start: {match: /\$\{/}
+            end: {match: /\}/}
+            color: "strEscape"
+            contains: [
+                {include: "single-quoted-string"}
+                {include: "double-quoted-string"}
+                {include: "backtick-string"}
+                {include: "dollarExp"}
+            ]
+        }
+    ]
+    contains: [
+        {include: "single-quoted-string"}
+        {include: "double-quoted-string"}
+        {include: "backtick-string"}
+        // 正则表达式
+        {match: /(?<=[=,(&|!:]\s{0,10})/ + "(/(?:(\\\\.)|[^/\r\n])+/)" + /([img]*)/
+            recordAllGroups: true, 1: "meta", 2: "strEscape", 3: "operator"}
+        {builtin: #JAVA_NUMBER#}
+        {match: keywordsToRegex(
+                "break case catch class const continue debugger default delete do else enum export"
+                "extends false finally for function if implements import instanceof interface let"
+                "new null package private protected public return static super switch this with"
+                "throw true try typeof var void while yield function log"
+            ), 0: "keyword"
+        }
+        
+    ]
+    codeFormatter: #BUILT_IN_JS_FORMATTER#
+}
